@@ -494,6 +494,119 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════
+          5.5 OUR WORK (PORTFOLIO) - SCALABLE & PREMIUM
+      ══════════════════════════════════════════ */}
+      <section id="portfolio" className="py-32 lg:py-40 px-6 bg-charcoal text-cream-light relative overflow-hidden">
+        <div className="max-w-[1300px] mx-auto relative z-10">
+          
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-20 gap-8">
+            <Reveal direction="left">
+              <SectionLabel ar="أهم أعمالنا" en="Our Featured Work" light />
+              <h2 className="font-serif text-4xl lg:text-5xl xl:text-6xl text-cream-light leading-[1.15]">
+                <span className="ar">
+                  معرض <em className="not-italic text-gold">الإبداع</em>
+                </span>
+                <span className="en">
+                  Gallery of <em className="italic text-gold">Creativity</em>
+                </span>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.15} className="max-w-sm text-start">
+              <p className="text-cream/40 font-light text-sm leading-relaxed">
+                <span className="ar">جولة بصرية في أحدث مشاريعنا التي تم تصميمها وتنفيذها بأعلى معايير الدقة والفخامة لتناسب أصحاب الذوق الرفيع.</span>
+                <span className="en">A visual tour of our latest projects designed and executed with the highest standards of precision and luxury.</span>
+              </p>
+            </Reveal>
+          </div>
+
+          {/* Portfolio Grid - Highly scalable & Animated */}
+          <StaggerParent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { id: 1, img: "/work-1.jpeg", titleAr: "استراحة مهنا", titleEn: "Muhanna Rest House", category: "صحار | المجلس الرئيسي" },
+              { id: 2, img: "/work-2.jpeg", titleAr: "استراحة مهنا", titleEn: "Muhanna Rest House", category: "صحار | التصميم الداخلي" },
+              { id: 3, img: "/work-3.jpeg", titleAr: "استراحة مهنا", titleEn: "Muhanna Rest House", category: "صحار | غرف النوم" },
+              { id: 4, img: "/work-4.jpeg", titleAr: "استراحة مهنا", titleEn: "Muhanna Rest House", category: "صحار | الممرات والمداخل" },
+              { id: 5, img: "/work-5.jpeg", titleAr: "استراحة مهنا", titleEn: "Muhanna Rest House", category: "صحار | الجلسات الخارجية" },
+              { id: 6, img: "/work-6.jpeg", titleAr: "استراحة مهنا", titleEn: "Muhanna Rest House", category: "صحار | منطقة الطعام" },
+              { id: 7, img: "/work-7.jpeg", titleAr: "استراحة مهنا", titleEn: "Muhanna Rest House", category: "صحار | أعمال الإنارة" },
+              { id: 8, img: "/work-8.jpeg", titleAr: "استراحة مهنا", titleEn: "Muhanna Rest House", category: "صحار | التشطيبات الخشبية" },
+              { id: 9, img: "/work-9.jpeg", titleAr: "استراحة مهنا", titleEn: "Muhanna Rest House", category: "صحار | اللمسات النهائية" },
+              // مستقبلاً: لكي تضيف أي عمل جديد، فقط انسخ السطر بالأعلى والصقه هنا وقم بتغيير مسار الصورة والنصوص.
+            ].map((work) => (
+              <StaggerChild key={work.id}>
+                <motion.div 
+                  whileHover="hover"
+                  className="group relative aspect-[4/5] overflow-hidden bg-charcoal-dark cursor-pointer block"
+                >
+                  {/* Image with slow cinematic scale */}
+                  <motion.img 
+                    src={work.img} 
+                    alt={work.titleEn} 
+                    className="w-full h-full object-cover opacity-85 transition-opacity duration-700 group-hover:opacity-100"
+                    variants={{
+                      hover: { scale: 1.08, transition: { duration: 1.2, ease: [0.33, 1, 0.68, 1] } }
+                    }}
+                    loading="lazy"
+                  />
+                  
+                  {/* Rich Deep Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#14120e] via-[#14120e]/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-700" />
+                  
+                  {/* Content Container */}
+                  <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-10 overflow-hidden">
+                    
+                    {/* Animated Gold Line */}
+                    <motion.div 
+                      className="w-10 h-[1px] bg-gold mb-5 origin-left"
+                      variants={{
+                        hover: { scaleX: 2.5, backgroundColor: "#d4af37", transition: { duration: 0.6, ease: "easeOut" } }
+                      }}
+                    />
+
+                    {/* Category (Slides down slightly on hover) */}
+                    <motion.p 
+                      className="text-[10px] md:text-[11px] font-medium tracking-[0.25em] text-gold uppercase mb-3 opacity-90"
+                      variants={{
+                        hover: { y: -4, opacity: 1, transition: { duration: 0.5 } }
+                      }}
+                    >
+                      {work.category}
+                    </motion.p>
+
+                    {/* Title Container (Masked reveal effect) */}
+                    <div className="overflow-hidden">
+                      <motion.h3 
+                        className="font-sans font-bold text-xl md:text-2xl text-white leading-snug"
+                        variants={{
+                          hover: { y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+                        }}
+                      >
+                        <span className="ar block">{work.titleAr}</span>
+                      </motion.h3>
+                    </div>
+
+                    <div className="overflow-hidden mt-1">
+                      <motion.span 
+                        className="en block text-xs md:text-sm font-light text-white/60 tracking-wider"
+                        variants={{
+                          hover: { y: 0, opacity: 1, transition: { duration: 0.5, delay: 0.05, ease: "easeOut" } }
+                        }}
+                      >
+                        {work.titleEn}
+                      </motion.span>
+                    </div>
+
+                  </div>
+                </motion.div>
+              </StaggerChild>
+            ))}
+          </StaggerParent>
+          
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
           6. CONTACT
       ══════════════════════════════════════════ */}
       <section id="contact" className="py-32 lg:py-40 px-6 bg-charcoal-mid relative overflow-hidden text-cream-light">
@@ -604,7 +717,7 @@ export default function HomePage() {
           <div className="flex items-center gap-3">
             <BrandLogo className="w-7 h-5 text-gold/60" />
             <p className="text-xs font-light text-cream/35 tracking-wider">
-              © 2025 Future Design Decore — All rights reserved
+              © 2026 Future Design Decore — All rights reserved
             </p>
           </div>
           <div className="flex gap-8">
