@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useMotionValue, animate } from "framer-motion";
+import { motion, useInView, useMotionValue, animate, AnimatePresence } from "framer-motion";
 import {
   Phone,
   Instagram,
@@ -15,28 +15,18 @@ import {
   PaintBucket,
   Box,
   Square,
+  X,
 } from "lucide-react";
 import Nav from "@/components/Nav";
 import BrandLogo from "@/components/BrandLogo";
 
-/* ─── Reveal wrapper for elegant entry ─── */
+/* ─── Reveal wrapper ─── */
 const Reveal = ({ children, delay = 0, className = "", direction = "up" }: any) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  const hidden =
-    direction === "up" ? { opacity: 0, y: 40 }
-      : direction === "left" ? { opacity: 0, x: -40 }
-      : { opacity: 0, x: 40 };
-
+  const hidden = direction === "up" ? { opacity: 0, y: 40 } : direction === "left" ? { opacity: 0, x: -40 } : { opacity: 0, x: 40 };
   return (
-    <motion.div
-      ref={ref}
-      initial={hidden}
-      animate={isInView ? { opacity: 1, y: 0, x: 0 } : hidden}
-      transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={className}
-    >
+    <motion.div ref={ref} initial={hidden} animate={isInView ? { opacity: 1, y: 0, x: 0 } : hidden} transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }} className={className}>
       {children}
     </motion.div>
   );
@@ -47,54 +37,33 @@ const StaggerParent = ({ children, className = "", delay = 0 }: any) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: 0.1, delayChildren: delay } },
-      }}
-      className={className}
-    >
+    <motion.div ref={ref} initial="hidden" animate={isInView ? "visible" : "hidden"} variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: delay } } }} className={className}>
       {children}
     </motion.div>
   );
 };
 
 const StaggerChild = ({ children, className = "" }: any) => (
-  <motion.div
-    variants={{
-      hidden: { opacity: 0, y: 32 },
-      visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
-    }}
-    className={className}
-  >
+  <motion.div variants={{ hidden: { opacity: 0, y: 32 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } } }} className={className}>
     {children}
   </motion.div>
 );
 
-/* ─── Animated counter for stats ─── */
+/* ─── Animated counter ─── */
 function Counter({ to, suffix = "" }: any) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const motionVal = useMotionValue(0);
   const [display, setDisplay] = useState("0");
-
   useEffect(() => {
     if (!isInView || typeof to === "string") return;
-    const ctrl = animate(motionVal, to, {
-      duration: 1.8,
-      ease: "easeOut",
-      onUpdate: (v) => setDisplay(Math.round(v).toString()),
-    });
+    const ctrl = animate(motionVal, to, { duration: 1.8, ease: "easeOut", onUpdate: (v) => setDisplay(Math.round(v).toString()) });
     return ctrl.stop;
   }, [isInView, to, motionVal]);
-
   return <span ref={ref}>{typeof to === "string" ? to : display}{suffix}</span>;
 }
 
-/* ─── Premium Section label ─── */
+/* ─── Section label ─── */
 function SectionLabel({ ar, en, light = false }: any) {
   const color = light ? "text-gold-light" : "text-gold";
   const lineColor = light ? "bg-gold-light" : "bg-gold";
@@ -107,70 +76,115 @@ function SectionLabel({ ar, en, light = false }: any) {
   );
 }
 
-/* ─── Project Card (Premium Hover) ─── */
-const ProjectCard = ({ src, label }: { src: string; label: string }) => (
-  <div className="group relative w-[290px] sm:w-[320px] md:w-[380px] aspect-[16/10] overflow-hidden bg-charcoal-dark shrink-0 cursor-pointer border border-transparent transition-all duration-500 ease-out hover:border-gold/30 hover:shadow-[0_0_30px_rgba(212,175,55,0.08)]">
-    {/* الصورة مع تأثير التقريب الناعم جداً */}
-    <img
-      src={src}
-      alt={label}
-      className="w-full h-full object-cover opacity-85 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-105"
-      loading="lazy"
-    />
-    {/* تدرج لوني غني لبروز النص */}
-    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0907] via-[#0a0907]/20 to-transparent opacity-90 pointer-events-none" />
-    
-    {/* محتوى النص */}
-    <div className="absolute bottom-0 start-0 w-full p-6 md:p-8 pointer-events-none translate-y-1 transition-transform duration-500 ease-out group-hover:translate-y-0">
+/* ─── Project Card (Hover & Click to Zoom) ─── */
+const ProjectCard = ({ src, label, onClick }: { src: string; label: string; onClick: () => void }) => (
+  <div 
+    onClick={onClick}
+    className="group relative w-[280px] sm:w-[320px] md:w-[380px] aspect-[3/4] overflow-hidden bg-charcoal-dark shrink-0 cursor-zoom-in border border-transparent transition-all duration-500 ease-out hover:border-gold/30 hover:shadow-[0_0_30px_rgba(212,175,55,0.08)]"
+  >
+    <img src={src} alt={label} className="w-full h-full object-cover opacity-85 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-105" loading="lazy" />
+    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0907] via-[#0a0907]/10 to-transparent opacity-90 pointer-events-none transition-opacity duration-500 group-hover:opacity-100" />
+    <div className="absolute bottom-0 start-0 w-full p-6 md:p-8 pointer-events-none translate-y-2 transition-transform duration-500 ease-out group-hover:translate-y-0">
       <div className="w-8 h-[1px] bg-gold mb-3 opacity-50 transition-all duration-500 group-hover:w-16 group-hover:opacity-100" />
-      <p className="text-white text-base md:text-lg font-medium tracking-wide drop-shadow-md">
-        <span className="ar">{label}</span>
-      </p>
+      <p className="text-white text-base md:text-lg font-medium tracking-wide drop-shadow-md"><span className="ar">{label}</span></p>
     </div>
   </div>
 );
 
-/* ─── ULTIMATE SEAMLESS INFINITE MARQUEE COMPONENT (Pixel Perfect Loop) ─── */
-const InfinitePremiumMarquee = ({ images, duration }: { images: { src: string; label: string }[]; duration?: number }) => {
-  // تكرار العناصر بذكاء لضمان انسيابية مطلقة وبدون تكرار في الـ DOM
-  const duplicatedImages = [...images, ...images];
+/* ─── Flawless CSS Infinite Marquee ─── */
+const InfiniteSeamlessMarquee = ({ images, duration, reverse, onImageClick }: { images: any[]; duration: number; reverse?: boolean; onImageClick: (img: any) => void }) => {
+  // المضاعفة 4 مرات لضمان عدم وجود أي فراغ مهما كان عرض الشاشة
+  const duplicatedImages = [...images, ...images, ...images, ...images];
+  const animationClass = reverse ? "animate-marquee-right" : "animate-marquee-left";
 
   return (
-    <div className="relative w-full overflow-hidden mb-12">
-      {/* القناع السينمائي على الحواف (تلاشي) */}
+    <div className="relative w-full overflow-hidden mb-16">
       <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-charcoal to-transparent z-10 pointer-events-none" />
       <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-charcoal to-transparent z-10 pointer-events-none" />
       
-      {/* صف الصور المتحرك - LOOP لا نهائي */}
-      <motion.div
-        className="flex gap-4 sm:gap-6 px-3"
-        // الحركة من 0% إلى -50% من إجمالي مضاعف الصور، ليعود فجأة وبدون ملاحظة العميل لنقطة الصفر
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: duration || 30, ease: "linear", repeat: Infinity, delay: 0 }}
-        // الإيقاف الناعم عند التمرير
-        whileHover={{ animationPlayState: "paused" }}
+      <div 
+        className={`flex gap-4 sm:gap-6 w-max ${animationClass} hover:animation-paused`}
+        style={{ animationDuration: `${duration}s` }}
       >
         {duplicatedImages.map((image, index) => (
-          <ProjectCard key={index} src={image.src} label={image.label} />
+          <ProjectCard key={index} src={image.src} label={image.label} onClick={() => onImageClick(image)} />
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 };
 
 export default function HomePage() {
+  const [selectedImage, setSelectedImage] = useState<{ src: string; label: string } | null>(null);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-charcoal">
+      
+      {/* ─── CSS Animations Injected ─── */}
+      <style>{`
+        @keyframes marquee-left {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-right {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0%); }
+        }
+        .animate-marquee-left { animation: marquee-left linear infinite; }
+        .animate-marquee-right { animation: marquee-right linear infinite; }
+        .hover\\:animation-paused:hover { animation-play-state: paused; }
+      `}</style>
+
+      {/* ─── Lightbox Modal (Zoom In) ─── */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-[999] flex items-center justify-center bg-[#0a0907]/95 backdrop-blur-md p-4 sm:p-10 cursor-zoom-out"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative flex flex-col items-center justify-center max-w-5xl w-full cursor-default"
+            >
+              <button 
+                onClick={() => setSelectedImage(null)}
+                className="absolute -top-12 right-0 md:-right-12 p-2 text-white/50 hover:text-gold transition-colors duration-300"
+              >
+                <X className="w-8 h-8" strokeWidth={1.5} />
+              </button>
+              
+              <img 
+                src={selectedImage.src} 
+                alt={selectedImage.label} 
+                className="w-auto max-h-[75vh] md:max-h-[85vh] object-contain rounded-sm shadow-2xl border border-white/5" 
+              />
+              
+              <div className="mt-6 text-center">
+                <p className="text-gold tracking-[0.2em] uppercase text-sm md:text-base font-medium">
+                  {selectedImage.label}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Nav />
 
       {/* ══════════════════════════════════════════
-          1. HERO (فخم، بسيط، عصري)
+          1. HERO
       ══════════════════════════════════════════ */}
       <section className="relative h-[100dvh] bg-charcoal flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <motion.div animate={{ scale: [1, 1.06, 1], opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-[40%] -end-[15%] w-[700px] h-[700px] rounded-full border border-gold/20" />
           <motion.div animate={{ scale: [1, 1.08, 1], opacity: [0.2, 0.5, 0.2] }} transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2.5 }} className="absolute -top-[25%] -end-[5%] w-[480px] h-[480px] rounded-full border border-gold/12" />
-          <motion.div animate={{ scale: [1, 1.04, 1], opacity: [0.1, 0.3, 0.1] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute -top-[55%] -end-[25%] w-[900px] h-[900px] rounded-full border border-gold/8" />
           <div className="absolute inset-0 bg-gradient-to-tr from-gold/4 via-transparent to-transparent opacity-80" />
         </div>
 
@@ -178,25 +192,20 @@ export default function HomePage() {
           <motion.div initial={{ scale: 0.88, opacity: 0.6 }} animate={{ scale: 1, opacity: 0.88 }} transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }} className="mb-7">
             <BrandLogo className="w-28 h-20 text-cream-light" />
           </motion.div>
-
           <motion.div initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }} style={{ transformOrigin: "top" }} className="w-[1px] h-12 bg-gradient-to-b from-transparent via-gold to-transparent mx-auto mb-7" />
-
           <motion.p initial={{ y: 14, opacity: 0.3 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }} className="font-sans font-extralight text-xs md:text-sm tracking-[0.45em] text-gold-light uppercase mb-5">
             <span className="ar">خالد دياب</span><span className="en">Khaled Diab</span>
           </motion.p>
-
           <motion.h1 initial={{ y: 22, opacity: 0.2 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }} className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-cream-light leading-[1.1] -tracking-[0.02em] mb-3">
             Future Design
           </motion.h1>
           <motion.h1 initial={{ y: 22, opacity: 0.2 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1, delay: 0.75, ease: [0.16, 1, 0.3, 1] }} className="font-serif italic text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-gold leading-[1.1] -tracking-[0.02em] mb-10">
             Decore
           </motion.h1>
-
           <motion.p initial={{ y: 16, opacity: 0.25 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.9, delay: 0.9, ease: [0.16, 1, 0.3, 1] }} className="font-sans font-light text-xs sm:text-sm md:text-base text-cream/55 tracking-[0.2em] uppercase mb-12 leading-loose">
             <span className="ar">تصميم داخلي · تنفيذ احترافي · إبداع لا حدود له</span>
             <span className="en tracking-[0.12em]">Interior Design · Professional Execution · Limitless Creativity</span>
           </motion.p>
-
           <motion.div initial={{ y: 14, opacity: 0.3 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.9, delay: 1.05, ease: [0.16, 1, 0.3, 1] }}>
             <a href="#design-services" className="group relative inline-flex items-center gap-3 px-10 py-4 border border-gold/40 text-gold-light font-sans text-xs tracking-[0.3em] uppercase overflow-hidden transition-colors duration-300 hover:text-charcoal">
               <span className="absolute inset-0 bg-gold translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
@@ -214,7 +223,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════
-          2. ABOUT (تنظيف وتبسيط)
+          2. ABOUT
       ══════════════════════════════════════════ */}
       <section id="about" className="py-32 lg:py-40 px-6 bg-cream-light relative">
         <div className="max-w-[1300px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-28 items-center">
@@ -227,8 +236,6 @@ export default function HomePage() {
             <div className="space-y-6 text-text-muted font-light text-base md:text-lg leading-[2] text-justify">
               <p className="ar">في فيوتشر ديزاين ديكور، نؤمن بأن كل مساحة تروي قصة. بقيادة المصمم خالد دياب، نجمع بين الفخامة والوظيفة لنبتكر تصاميم داخلية تعكس شخصية عملائنا وترتقي بأسلوب حياتهم.</p>
               <p className="ar">نقدم حلولاً متكاملة من التصميم على الورق حتى التسليم النهائي، مع اهتمام استثنائي بأدق التفاصيل وأعلى معايير الجودة.</p>
-              <p className="en">At Future Design Decore, we believe every space tells a story. Led by designer Khaled Diab, we combine luxury with functionality to create interior designs that reflect our clients' personalities.</p>
-              <p className="en">We provide end-to-end solutions from initial concept to final delivery, with exceptional attention to the finest details and the highest quality standards.</p>
             </div>
           </Reveal>
 
@@ -258,25 +265,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════
-          3. MARQUEE STRIP (البار الذهبي)
-      ══════════════════════════════════════════ */}
-      <div className="bg-gold py-5 overflow-hidden" dir="ltr">
-        <div className="flex whitespace-nowrap" style={{ animation: "marquee-scroll 25s linear infinite" }}>
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="flex items-center shrink-0">
-              {["Interior Design", "Future Design Decore", "تصميم داخلي", "ديكور عصري", "تنفيذ احترافي", "جبسية وخشب", "إنارة مدروسة", "خرائط تنفيذية"].map((item, j) => (
-                <span key={j} className="inline-flex items-center">
-                  <span className="font-serif italic text-charcoal/80 px-8 text-sm tracking-wider">{item}</span>
-                  <span className="text-charcoal/30 text-[5px]">◆</span>
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ══════════════════════════════════════════
-          4. DESIGN SERVICES
+          3. DESIGN SERVICES
       ══════════════════════════════════════════ */}
       <section id="design-services" className="py-32 lg:py-40 px-6 bg-charcoal text-cream-light relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -327,7 +316,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════
-          5. EXECUTION SERVICES
+          4. EXECUTION SERVICES
       ══════════════════════════════════════════ */}
       <section id="execution-services" className="py-32 lg:py-40 px-6 bg-cream-light relative overflow-hidden">
         <div className="absolute end-0 top-1/2 -translate-y-1/2 font-serif text-[200px] font-bold text-charcoal/3 leading-none pointer-events-none select-none hidden xl:block">KD</div>
@@ -343,13 +332,13 @@ export default function HomePage() {
 
           <StaggerParent className="grid grid-cols-1 md:grid-cols-2 border border-charcoal/8 bg-white/50 backdrop-blur-sm shadow-xl">
             {[
-              { icon: HomeIcon, num: "01", ar: "أعمال التصميم الديكوري", en: "Decor Design Works", arDesc: "مجالس · غرف معيشة · مطابخ · حمامات · غرف نوم", enDesc: "Majlis · Living Rooms · Kitchens · Bathrooms · Bedrooms" },
-              { icon: Wrench, num: "02", ar: "أعمال النجارة", en: "Carpentry Works", arDesc: "ديكورات خشبية · خزائن · مطابخ مدمجة", enDesc: "Wooden Decors · Wardrobes · Built-in Kitchens" },
-              { icon: Square, num: "03", ar: "أعمال الجبس", en: "Gypsum Works", arDesc: "جدران · أسقف · ديكورات جبسية متنوعة", enDesc: "Walls · Ceilings · Various Gypsum Decorations" },
-              { icon: Layers, num: "04", ar: "أسمنت بورد", en: "Cement Board", arDesc: "قواطع داخلية · واجهات خارجية", enDesc: "Internal Walls · External Facades" },
-              { icon: Grid3x3, num: "05", ar: "الحجر وبدائله", en: "Stone & Alternatives", arDesc: "تكسية جدران داخلية · واجهات خارجية", enDesc: "Internal Wall Cladding · External Facades" },
-              { icon: Star, num: "06", ar: "لوحات ثلاثية الأبعاد", en: "3D Panels", arDesc: "لوحات 3D مضيئة بأشكال وتصاميم متعددة", enDesc: "Illuminated 3D panels with multiple shapes and designs" },
-              { icon: PaintBucket, num: "07", ar: "أعمال الدهانات", en: "Painting Works", arDesc: "دهانات متنوعة · تشطيبات ملمسية", enDesc: "Various paint types · Texture finishes" },
+              { icon: HomeIcon, num: "01", ar: "أعمال التصميم الديكوري", en: "Decor Design Works", arDesc: "مجالس · غرف معيشة · مطابخ · حمامات · غرف نوم" },
+              { icon: Wrench, num: "02", ar: "أعمال النجارة", en: "Carpentry Works", arDesc: "ديكورات خشبية · خزائن · مطابخ مدمجة" },
+              { icon: Square, num: "03", ar: "أعمال الجبس", en: "Gypsum Works", arDesc: "جدران · أسقف · ديكورات جبسية متنوعة" },
+              { icon: Layers, num: "04", ar: "أسمنت بورد", en: "Cement Board", arDesc: "قواطع داخلية · واجهات خارجية" },
+              { icon: Grid3x3, num: "05", ar: "الحجر وبدائله", en: "Stone & Alternatives", arDesc: "تكسية جدران داخلية · واجهات خارجية" },
+              { icon: Star, num: "06", ar: "لوحات ثلاثية الأبعاد", en: "3D Panels", arDesc: "لوحات 3D مضيئة بأشكال وتصاميم متعددة" },
+              { icon: PaintBucket, num: "07", ar: "أعمال الدهانات", en: "Painting Works", arDesc: "دهانات متنوعة · تشطيبات ملمسية" },
             ].map((item, idx) => (
               <StaggerChild key={idx}>
                 <div className={`group flex items-start gap-7 p-10 xl:p-12 transition-colors duration-400 hover:bg-white/70 border-b border-charcoal/8 ${idx % 2 === 0 ? "md:border-e md:border-charcoal/8" : ""}`}>
@@ -358,8 +347,8 @@ export default function HomePage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2"><span className="font-serif text-[11px] text-charcoal/20 tracking-widest">{item.num}</span></div>
-                    <h3 className="font-sans font-bold text-base md:text-lg text-charcoal mb-2 leading-snug"><span className="ar">{item.ar}</span><span className="en">{item.en}</span></h3>
-                    <p className="text-sm font-light text-text-muted leading-relaxed text-justify"><span className="ar">{item.arDesc}</span><span className="en">{item.enDesc}</span></p>
+                    <h3 className="font-sans font-bold text-base md:text-lg text-charcoal mb-2 leading-snug"><span className="ar">{item.ar}</span></h3>
+                    <p className="text-sm font-light text-text-muted leading-relaxed text-justify"><span className="ar">{item.arDesc}</span></p>
                   </div>
                 </div>
               </StaggerChild>
@@ -369,9 +358,9 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════
-          5.5 OUR WORK (PIXEL-PERFECT SEAMLESS LOOP)
+          5. OUR WORK (SEAMLESS INFINITE LOOP + LIGHTBOX)
       ══════════════════════════════════════════ */}
-      <section id="portfolio" className="py-32 lg:py-40 bg-charcoal relative overflow-hidden">
+      <section id="portfolio" className="pt-32 pb-24 lg:pt-40 lg:pb-32 bg-charcoal relative overflow-hidden border-t border-gold/5">
         <div className="max-w-[1300px] mx-auto px-6 mb-16 relative z-10">
           <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-8">
             <Reveal direction="left">
@@ -383,16 +372,17 @@ export default function HomePage() {
             </Reveal>
             <Reveal delay={0.15} className="max-w-sm text-start">
               <p className="text-cream/40 font-light text-sm leading-relaxed text-justify">
-                <span className="ar">جولة بصرية في أحدث مشاريعنا المتميزة. نستخدم تمرير سينمائي انسيابي لانهائي بدون توقف أو إنقطاع، حيث تلتصق آخر صورة بالأولى بسلاسة مطلقة.</span>
-                <span className="en">A seamless visual tour of our latest projects. Our cinema-style marquee loops infinitely without gaps, ensuring the last image perfectly meets the first.</span>
+                <span className="ar">جولة بصرية لا نهائية في أحدث مشاريعنا. اضغط على أي صورة لتكبيرها واستكشاف دقة التفاصيل وجودة التنفيذ.</span>
+                <span className="en">An infinite visual tour of our latest projects. Click any image to enlarge and explore the precision of our execution.</span>
               </p>
             </Reveal>
           </div>
         </div>
 
-        {/* LOOP 1: استراحة مهنا (صحار) - تمرير طبيعي */}
-        <InfinitePremiumMarquee 
-          duration={35} // أبطأ قليلاً لبروز الديكور
+        {/* LOOP 1: استراحة مهنا */}
+        <InfiniteSeamlessMarquee 
+          duration={80} // كلما زاد الرقم كانت الحركة أبطأ وأكثر فخامة
+          onImageClick={setSelectedImage}
           images={[
             { src: "/work-1.jpeg", label: "صحار | المجلس الرئيسي" },
             { src: "/work-2.jpeg", label: "صحار | التصميم الداخلي" },
@@ -406,10 +396,11 @@ export default function HomePage() {
           ]}
         />
         
-        {/* LOOP 2: تصميم وتنفيذ المغاسل (مسقط) - تمرير معاكس */}
-        <InfinitePremiumMarquee 
-          duration={30} // أسرع لبروز المواد
-          reverse={true} // حركة معاكسة لإبهار بصري
+        {/* LOOP 2: مغاسل مسقط */}
+        <InfiniteSeamlessMarquee 
+          duration={65} 
+          reverse={true} 
+          onImageClick={setSelectedImage}
           images={[
             { src: "/marble-1.jpeg", label: "مسقط | مغاسل رخام فاخرة" },
             { src: "/marble-2.jpeg", label: "مسقط | كوارتز عالي الجودة" },
@@ -422,7 +413,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════
-          6. CONTACT (تنظيم وتحسين)
+          6. CONTACT
       ══════════════════════════════════════════ */}
       <section id="contact" className="py-32 lg:py-40 px-6 bg-charcoal-mid relative overflow-hidden text-cream-light border-t border-gold/10">
         <div className="absolute -bottom-12 -start-8 font-serif text-[280px] font-bold text-gold/3 leading-none pointer-events-none select-none hidden md:block">KD</div>
@@ -432,11 +423,9 @@ export default function HomePage() {
             <SectionLabel ar="تواصل مع المكتب" en="Contact the Studio" light />
             <h2 className="font-serif text-4xl lg:text-5xl xl:text-6xl text-cream-light leading-[1.15] mb-6">
               <span className="ar">دعنا نتحدث<br /><em className="not-italic text-gold">عن مشروعك</em></span>
-              <span className="en">Let's Discuss<br /><em className="italic text-gold">Your Project</em></span>
             </h2>
             <p className="text-cream/50 font-light text-base mb-12 leading-[1.9] text-justify max-w-lg">
               <span className="ar">نحن هنا لتحويل أفكارك إلى حقيقة. تواصل معنا للحصول على استشارتك المجانية ومناقشة تفاصيل مشروعك.</span>
-              <span className="en">We are here to turn your ideas into reality. Reach out for your free consultation and to discuss your project details.</span>
             </p>
 
             <div className="space-y-4 max-w-md">
@@ -450,8 +439,8 @@ export default function HomePage() {
                     <c.icon className="w-6 h-6 text-gold group-hover:text-charcoal transition-colors duration-300" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-[10px] tracking-[0.3em] text-gold/60 uppercase mb-1 font-medium"><span className="ar">{c.labelAr}</span><span className="en">{c.labelEn}</span></div>
-                    <div className="text-base font-medium text-cream/95" dir={c.forceLtr ? "ltr" : undefined}><span className="ar">{c.valAr}</span><span className="en">{c.valEn}</span></div>
+                    <div className="text-[10px] tracking-[0.3em] text-gold/60 uppercase mb-1 font-medium"><span className="ar">{c.labelAr}</span></div>
+                    <div className="text-base font-medium text-cream/95" dir={c.forceLtr ? "ltr" : undefined}><span className="ar">{c.valAr}</span></div>
                   </div>
                 </motion.a>
               ))}
@@ -466,7 +455,7 @@ export default function HomePage() {
                 <div className="w-20 h-[1px] bg-gold/20 mb-9" />
                 <div className="font-sans font-light text-xl tracking-[0.5em] uppercase text-cream/85 mb-3">Khaled Diab</div>
                 <div className="font-sans font-light text-xs tracking-[0.4em] uppercase text-gold/60">Future Design Decore</div>
-                <div className="mt-10 text-[11px] tracking-[0.25em] uppercase text-cream/30"><span className="ar">سلطنة عُمان</span><span className="en">Sultanate of Oman</span></div>
+                <div className="mt-10 text-[11px] tracking-[0.25em] uppercase text-cream/30"><span className="ar">سلطنة عُمان</span></div>
               </div>
             </div>
           </Reveal>
@@ -474,7 +463,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════
-          7. FOOTER (تبسيط)
+          7. FOOTER
       ══════════════════════════════════════════ */}
       <footer className="bg-charcoal border-t border-gold/10 py-10 px-6">
         <div className="max-w-[1300px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
