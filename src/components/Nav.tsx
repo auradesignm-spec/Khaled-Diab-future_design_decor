@@ -74,9 +74,9 @@ export default function Nav() {
             <span className="en">Execution Services</span>
           </a>
 
-          {/* NEW MENU ITEM */}
+          {/* تغيير الرابط هنا ليفتح الصفحة الجديدة */}
           <a
-            href="#portfolio"
+            href="/portfolio"
             className="text-cream-light hover:text-gold transition-colors uppercase"
           >
             <span className="ar">أهم أعمالنا</span>
