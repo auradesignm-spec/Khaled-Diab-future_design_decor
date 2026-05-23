@@ -1,99 +1,71 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { Phone, MapPin, X, Layers, Grid3x3, Lamp, Wrench, PaintBucket, Box, Square, Home as HomeIcon, Star, Map, Sun } from "lucide-react";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { Phone, Instagram, MapPin } from "lucide-react";
 import Nav from "@/components/Nav";
 import BrandLogo from "@/components/BrandLogo";
 
-/* ─── المكونات الأساسية ─── */
-const Reveal = ({ children, delay = 0 }: any) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay }}>
-      {children}
-    </motion.div>
-  );
-};
-
-/* ─── المعرض اللانهائي (محصن ضد تغير اللغة) ─── */
-const InfiniteMarquee = ({ images, duration, reverse = false, onImageClick }: any) => {
-  if (!images || images.length === 0) return null;
-  const list = [...images, ...images, ...images];
-
-  return (
-    <div className="relative w-full overflow-hidden py-10" dir="ltr">
-      <motion.div 
-        className="flex gap-6 px-3 w-max"
-        animate={{ x: reverse ? ["-50%", "0%"] : ["0%", "-50%"] }}
-        transition={{ duration: duration, ease: "linear", repeat: Infinity }}
-      >
-        {list.map((img, i) => (
-          <div 
-            key={i} 
-            onClick={() => onImageClick(img)}
-            className="relative w-[300px] md:w-[400px] aspect-[4/5] shrink-0 cursor-pointer overflow-hidden border border-gold/10 group"
-          >
-            <img src={img.src} alt={img.label} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
-            <div className="absolute inset-0 bg-black/40 transition-colors duration-500" />
-            <div className="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/80 to-transparent">
-               <p className="text-white text-sm tracking-widest uppercase font-medium">{img.label}</p>
-            </div>
-          </div>
-        ))}
-      </motion.div>
-    </div>
-  );
-};
+/* ─── المكونات الأساسية للبساطة والاستقرار ─── */
+const Section = ({ children, id }: any) => (
+  <section id={id} className="py-20 px-6 container mx-auto">
+    {children}
+  </section>
+);
 
 export default function HomePage() {
-  const [selectedImage, setSelectedImage] = useState<any>(null);
-
   return (
     <div className="bg-charcoal min-h-screen text-white overflow-x-hidden">
       <Nav />
       
-      {/* Lightbox */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedImage(null)} className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-6 backdrop-blur-sm cursor-zoom-out">
-             <motion.img initial={{ scale: 0.9 }} animate={{ scale: 1 }} src={selectedImage.src} className="max-w-full max-h-[90vh] object-contain shadow-2xl" />
-             <button onClick={() => setSelectedImage(null)} className="absolute top-10 right-10 text-white/50 hover:text-white transition"><X size={40}/></button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <section className="h-[70vh] flex flex-col items-center justify-center text-center px-6">
-         <Reveal><BrandLogo className="w-32 h-24 text-gold mb-8" /></Reveal>
-         <Reveal delay={0.2}><h1 className="text-5xl md:text-7xl font-serif mb-6">Future Design</h1></Reveal>
+      {/* Hero */}
+      <section className="h-[80vh] flex flex-col items-center justify-center text-center px-6">
+         <BrandLogo className="w-32 h-24 text-gold mb-8" />
+         <h1 className="text-5xl md:text-7xl font-serif mb-6">Future Design</h1>
+         <p className="text-gold tracking-[0.3em] uppercase text-sm">Decore & Interior Architecture</p>
       </section>
 
-      <section id="portfolio" className="py-24 bg-[#0a0907]">
-        <div className="container mx-auto px-6 mb-12"><Reveal><h2 className="text-4xl font-serif">معرض الإبداع</h2></Reveal></div>
-        <InfiniteMarquee 
-          duration={50} 
-          onImageClick={setSelectedImage}
-          images={[
-            { src: "/work-1.jpeg", label: "صحار | المجلس الرئيسي" },
-            { src: "/work-2.jpeg", label: "صحار | التصميم الداخلي" },
-            { src: "/work-3.jpeg", label: "صحار | غرف النوم" },
-            { src: "/marble-1.jpeg", label: "مغاسل - رخام" },
-            { src: "/marble-2.jpeg", label: "مغاسل - كوارتز" },
-            { src: "/marble-3.jpeg", label: "مغاسل - جرانيت" },
-          ]}
-        />
-      </section>
+      {/* About */}
+      <Section id="about">
+        <h2 className="text-4xl font-serif mb-8 text-gold">من نحن</h2>
+        <p className="text-lg leading-relaxed max-w-2xl">
+          في فيوتشر ديزاين ديكور، نؤمن بأن كل مساحة تروي قصة. نقدم حلولاً متكاملة من التصميم حتى التنفيذ بأعلى معايير الجودة.
+        </p>
+      </Section>
 
-      <section id="contact" className="py-24 px-6 container mx-auto">
-         <Reveal>
-            <h2 className="text-4xl font-serif mb-10">تواصل معنا</h2>
-            <div className="space-y-6">
-               <a href="https://wa.link/gitycp" className="flex items-center gap-4 text-xl hover:text-gold transition"><Phone /> +968 7753 3603</a>
-               <a href="#" className="flex items-center gap-4 text-xl hover:text-gold transition"><MapPin /> سلطنة عُمان</a>
+      {/* Portfolio - معرض الصور (بشكل شبكي بسيط ومضمون) */}
+      <Section id="portfolio">
+        <h2 className="text-4xl font-serif mb-12 text-gold">معرض الإبداع</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+           {/* استراحة مهنا */}
+           {[1, 2, 3, 4, 5, 6].map((i) => (
+             <div key={i} className="aspect-[4/5] bg-black/20 border border-gold/10 overflow-hidden">
+               <img src={`/work-${i}.jpeg`} alt="Project" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+             </div>
+           ))}
+        </div>
+      </Section>
+
+      {/* Contact - البيانات المصححة */}
+      <Section id="contact">
+         <h2 className="text-4xl font-serif mb-12 text-gold">تواصل معنا</h2>
+         <div className="space-y-6">
+            <div className="flex items-center gap-4 text-lg">
+               <Phone className="text-gold" />
+               <a href="https://wa.link/gitycp" className="hover:text-gold transition">+968 7753 3603</a>
             </div>
-         </Reveal>
-      </section>
+            <div className="flex items-center gap-4 text-lg">
+               <Instagram className="text-gold" />
+               <a href="https://www.instagram.com/future_design_decor" className="hover:text-gold transition">@future_design_decor</a>
+            </div>
+            <div className="flex items-center gap-4 text-lg">
+               <MapPin className="text-gold" />
+               <span>سلطنة عُمان</span>
+            </div>
+         </div>
+      </Section>
       
-      <footer className="py-10 text-center text-white/30 text-sm border-t border-white/10">© 2026 Future Design Decore</footer>
+      <footer className="py-10 text-center text-white/30 text-sm border-t border-white/5">
+        © 2026 Future Design Decore
+      </footer>
     </div>
   );
 }
