@@ -1,6 +1,22 @@
-import { useState, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView, useMotionValue, animate, AnimatePresence } from "framer-motion";
+import {
+  Phone,
+  Instagram,
+  MapPin,
+  Home as HomeIcon,
+  Layers,
+  Grid3x3,
+  Sun,
+  Lamp,
+  Map,
+  Star,
+  Wrench,
+  PaintBucket,
+  Box,
+  Square,
+  X,
+} from "lucide-react";
 import Nav from "@/components/Nav";
 import BrandLogo from "@/components/BrandLogo";
 
@@ -50,7 +66,8 @@ const InfiniteSeamlessMarquee = ({ images, duration, reverse, onImageClick }: { 
   const animationClass = reverse ? "animate-marquee-right" : "animate-marquee-left";
 
   return (
-    <div className="relative w-full overflow-hidden mb-16">
+    // السر هنا: dir="ltr" يمنع الصور من الاختفاء عند التحويل للعربي
+    <div className="relative w-full overflow-hidden mb-16" dir="ltr">
       <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-charcoal to-transparent z-10 pointer-events-none" />
       <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-charcoal to-transparent z-10 pointer-events-none" />
 
@@ -133,8 +150,8 @@ export default function PortfolioPage() {
       {/* ══════════════════════════════════════════
           PORTFOLIO SECTION
       ══════════════════════════════════════════ */}
-      <section className="pt-32 pb-24 lg:pt-40 lg:pb-32 bg-charcoal relative overflow-hidden">
-        <div className="max-w-[1300px] mx-auto px-6 mb-16 relative z-10">
+      <section className="pt-32 pb-24 lg:pt-40 lg:pb-32 bg-charcoal relative overflow-hidden min-h-[80vh]">
+        <div className="max-w-[1300px] mx-auto px-6 mb-16 relative z-10 mt-10">
           <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-8">
             <Reveal direction="left">
               <SectionLabel ar="أهم أعمالنا" en="Our Featured Work" light />
