@@ -35,13 +35,12 @@ export default function Nav() {
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
         
-        {/* Logo */}
+        {/* Logo - توجيه للصفحة الرئيسية دائماً */}
         <a
-          href="#"
+          href="/"
           className="flex items-center gap-3 text-cream-light hover:text-gold transition-colors"
         >
           <BrandLogo className="w-10 h-10" color="var(--color-gold)" />
-
           <span className="font-serif tracking-widest uppercase text-sm md:text-base">
             Khaled Diab
           </span>
@@ -50,8 +49,9 @@ export default function Nav() {
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
 
+          {/* التعديل هنا: إضافة / قبل الـ # */}
           <a
-            href="#about"
+            href="/#about"
             className="text-cream-light hover:text-gold transition-colors uppercase"
           >
             <span className="ar">من نحن</span>
@@ -59,7 +59,7 @@ export default function Nav() {
           </a>
 
           <a
-            href="#design-services"
+            href="/#design-services"
             className="text-cream-light hover:text-gold transition-colors uppercase"
           >
             <span className="ar">خدمات التصميم</span>
@@ -67,14 +67,13 @@ export default function Nav() {
           </a>
 
           <a
-            href="#execution-services"
+            href="/#execution-services"
             className="text-cream-light hover:text-gold transition-colors uppercase"
           >
             <span className="ar">خدمات التنفيذ</span>
             <span className="en">Execution Services</span>
           </a>
 
-          {/* تغيير الرابط هنا ليفتح الصفحة الجديدة */}
           <a
             href="/portfolio"
             className="text-cream-light hover:text-gold transition-colors uppercase"
@@ -84,7 +83,7 @@ export default function Nav() {
           </a>
 
           <a
-            href="#contact"
+            href="/#contact"
             className="text-cream-light hover:text-gold transition-colors uppercase"
           >
             <span className="ar">تواصل معنا</span>
